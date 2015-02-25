@@ -1,6 +1,7 @@
 #include-once
 #include <File.au3>
 #include <SQLite.au3>
+#include <SQLite.dll.au3>
 #include <Array.au3>
 
 ;----------------------------------------------------------------------------------------------/
