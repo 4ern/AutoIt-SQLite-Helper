@@ -127,7 +127,8 @@ nächste Funktionen
 
 
 >>**Beispiele Magic Function Time & Date:**
-**PS: 'timestamp' -> ist der Name der Timestamp Spalte in der Datenbank**
+
+>>**PS: 'timestamp' -> ist der Name der Timestamp Spalte in der Datenbank**
 >```ruby
 > $sql_get('SELECT {timestamp::dd.mm.yyyy HH:MM:SS} from data')
 > $sql_get('SELECT {timestamp::HH:MM:SS -> Zeit} from data')
