@@ -1,5 +1,5 @@
-*Dokumentation vom: 23.02.2014*
-*von 4ern.de (24.02.2015)*
+*von 4ern.de*
+
 *SQLite Helper erleichtert die arbeit mit SQLite Datenbank in Verbindung mit AutoIt*
 
 #SQLite Helper#
@@ -14,39 +14,44 @@ Inhaltsverzeichnis
 - SQL_Info
 - SQL_Flag
 
+nächste Funktionen
+- sql_create()
+
 ----------
 
 ###SQL Init###
 >```AutoIt
-> $sql_init([$param1 = 'string'],[$param2 = 'string'])
+> $sql_init([$param1 = 'string'])
 >```
 >Mit der Initialisierung hat man die Möglichkeit die Pfade für die SQLite3.dll und zu der Datenbank festzulegen. **Die Initialisierung ist Default und muss nicht zwingend aufgerufen werden.**
 
 >**Regeln ohne Initialisierung**
 
- > 1. SQLite3.dll muss im Script Ordner vorhanden sein. Ansonsten wird eine erstellt.
- > 2. Script Ordner wird nach *s3db Dateien durchsucht. Erstes Vorkommen wird als Datenbank Datei herangezogen.
- > 3. Wenn keine Datenbank im Script Ordner ermittelt werden konnte, wird eine Datenbank Temporär im Arbeitsspeicher angelegt.
+ > 1. Script Ordner wird nach *s3db Dateien durchsucht. Erstes Vorkommen wird als Datenbank-Datei herangezogen.
+ > 2. Wenn keine Datenbank im Scriptordner ermittelt werden konnte, wird eine Datenbank Temporär im Arbeitsspeicher angelegt.
 
 >**Parameter**
 >>`$param1` (optional) Pfad zur Datenbank
->> `$param2`(optional) Pfad zur SQLite3.dll
 
 >**Beispiel**
 
 >```ruby
->  $pf_db = 'K:\CRS\ZFM\AutoIt\Programme\BillClear\billclear.s3db' 
+>  $pf_db = 'C:\myDb.s3db' 
 >  $sql_init($pf_db)
 >```
 
 ###SQL Defaults###
+
 >```AutoIt
 > $sql_defaults($param1 = 'string',[$param2 = 'string'],[$param2 = 'string'])
 >```
+> Diese Funktion dient dazu um Parameterangben zu sparen um z. B. Tabellenname oder Spaltnamen vor zu deklarieren. 
+> Diese Funktion sollte am Script anfang erfolgen.
+
 >**Parameter**
 >>`$param1` Name des Wertes
 >> `$param2`(optional) Wert
->> `$param3`(optional) Durchzuführende Aktion `'set')`, `'get' (default)` & `'display'`
+>> `$param3`(optional) Durchzuführende Aktion  `'get' (default)`, `'set'` & `'display'`
 
 >**Standard (Defaults)**
 >>`Tabelle => data`
@@ -93,28 +98,36 @@ Inhaltsverzeichnis
 >**Parameter**
 >>`$param` SQL Abfrage String
 >
->**Magic Funktionen Datum & Zeit**
+>**Magic Funktionen (Datum & Zeit)**
 >
 >**Achtung:** Damit diese Magic Funktionen korrekt funktionieren, müssen die Felder in SQL den Format Timestamp oder Date haben.
->>`{timestamp::dd.mm.yyyy HH:MM:SS.SSS}` gibt die definierte Spalte `timestamp` im vorgegebenen Format aus. Mit dem optionalen Parameter `-> Spaltennamen` kann man der Spalte einen anderen Namen geben.
+>>`{timestamp::dd.mm.yyyy HH:MM:SS.SSS}` gibt die definierte Spalte `timestamp` im vorgegebenen Format aus. Mit dem optionalen Parameter `-> Spaltennamen` kann man der Spalte einen anderen Namen geben. Siehe Beispiel.
 >
 
->>`{where::timestamp->24.02.2015}`Erstellt eine Teil SQL Abfrage, die es ermöglicht eine where Abfrage auf ein TimeStamp bzw Datum zu setzen. Siehe Beispiel.
+>>`{where::timestamp->24.02.2015}`Erstellt eine Teil SQL Abfrage, die es ermöglicht eine where Abfrage auf ein TimeStamp oder Datum anzuwenden. Siehe Beispiel.
 
 >>`{datum}` konvertiert ein deutsches Datum in SQL Format
 
 >>**Format:**
 >>>**Groß - Kleinschreibung muss beachtet werden (Case Sensitive)**
+
 >>`dd` = Tag
+
 >>`mm` = Monat
+
 >>`yyyy` = Jahr
+
 >>`HH` = Stunde
+
 >>`MM` = Minuten
+
 >>`SS` = Sekunden
+
 >>`SS.SSS` = Milisekunden
 
 
 >>**Beispiele Magic Function Time & Date:**
+**PS: 'timestamp' -> ist der Name der Timestamp Spalte in der Datenbank**
 >```ruby
 > $sql_get('SELECT {timestamp::dd.mm.yyyy HH:MM:SS} from data')
 > $sql_get('SELECT {timestamp::HH:MM:SS -> Zeit} from data')
@@ -124,18 +137,28 @@ Inhaltsverzeichnis
 >```
 
 >>**Ausgabe SQL STRING**
+
 >`SELECT strftime("%d.%m %Y  %H:%m:%S",timestamp) as timestamp from data;`
+
 > `SELECT strftime("%H:%m:%S",timestamp) as Zeit from data;`
+
 > `SELECT strftime("%d.%m %Y",timestamp) as Datum from data;`
+
 > `SELECT strftime("%H:%m:%S",timestamp) as Zeit from data where date = 2015-02-21;`
+
 > `SELECT strftime("%H:%M:%S",timestamp) as Zeit from data where timestamp >= date("2015-01-20") ORDER BY timestamp ASC Limit 1;`
 
 
 >**@error**
+
 >>`-1` SQLite meldet einen Fehler (prüfe Rückgabewert)
+
 >>`1` Fehler beim Aufruf von _SQLite_Query
+
 >>`2` Fehler beim Aufruf der SQLite API 'sqlite3_free_table'
+
 >>`3` Ausführung verhindert durch Sicherheitsmodus
+
 >>`4` Abbruch, Trennung oder @error gesetzt durch ein Callback (@extended wird auf einen SQLite Fehler gesetzt)
 
 >**Beispiel**
@@ -145,14 +168,15 @@ Inhaltsverzeichnis
  >  _arrayDisplay($aDatan)
 >```
 >>**Ausgabe**
->>|Row|Col 0|Col 1|Col 2|Col 3|Col 4
->|---|---|---|---|---|
->|[0]|ID|Acc|Gutschrift|State|Timestamp
->|[1]|1|600******|9,99|open|2015-02-19 15:02:44.811
->|[2]|2|600******|9,99|open|2015-02-19 15:03:11.898
->|[3]|3|600******|9,99|open|2015-02-19 16:46:45.900
->|[4]|4|600******|9,99|open|2015-02-19 15:03:38.888
->|[5]|5|600******|9,99|open|2015-02-19 15:04:05.889
+
+>>| Row | Col 0 | Col 1 | Col 2 | Col 3 | Col 4 |
+>>| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+>>| [0] | ID | Acc | Gutschrift| State| Timestamp |
+>>| [1] | 1 | 123 | 9,99 | open | 2015-02-19 15:02:44.811 |
+>>| [2] | 2 | 321 | 9,99 | open | 2015-02-19 15:03:11.898 |
+>>| [3] | 3 | 455 | 9,99 | open | 2015-02-19 16:46:45.900 |
+>>| [4] | 4 | 554 | 9,99 | open | 2015-02-19 15:03:38.888 |
+>>| [5] | 5 | 698 | 9,99 | open | 2015-02-19 15:04:05.889 |
 
 ###SQL Set###
 >```AutoIt
@@ -175,11 +199,17 @@ Inhaltsverzeichnis
 >`'UPDATE data SET date= 2015-02-24 where id = 3'`
 
 >**@error**
+
 >>`-1` SQLite hat einen Fehler festgestellt (Rückgabewert überprüfen)
+
 >>`1` Fehler beim Aufruf des SQLite API 'sqlite3_exec'
+
 >>`2` Aufruf vom Sicherheitsmodus verhindert
+
 >>`3` Fehler in der Callback-Funktion von _SQLite_GetTable2d
+
 >>`4` Fehler beim konvertieren des SQL-Auszuges in UTF-8
+
 
 >**Beispiel**
 >>``` AutoIt
@@ -212,15 +242,16 @@ Inhaltsverzeichnis
 >  $sql_info('array')
 >```
 >>**Ausgabe**
->>|Row|Col 0|Col 1
-|---|---
-|[0]|Version|0
-|[1]|Veränderungen ohne Trigger|0
-|[2]|Veränderungen mit Trigger|0
-|[3]|Letzter Fehler-Code|21
-|[4]|Fehler Nachricht|Library used incorrectly
-|[5]|Verzeichnis Datenbank|K:\CRS\Entwicklung\CCN\eddi\Projekte\AutoIt\BillClear\billclear.s3db
-|[6]|Verzeichnis SQLite3.dll|K:\CRS\Entwicklung\CCN\eddi\Projekte\AutoIt\BillClear\SQLite3.dll
+
+>>| Row| Col 0 | Col 1 |
+>>| ------------- | ------------- | ------------- |
+>>| [0] | Version | 0 |
+>>| [1] | Veränderungen ohne Trigger | 0 |
+>>| [2] | Veränderungen mit Trigger | 0 |
+>>| [3] | Letzter Fehler-Code | 21 |
+>>| [4] | Fehler Nachricht | Library used incorrectly |
+>>| [5] | Verzeichnis Datenbank | K:\CRS\Entwicklung\CCN\eddi\Projekte\AutoIt\BillClear\billclear.s3db |
+>>| [6] | Verzeichnis SQLite3.dll | K:\CRS\Entwicklung\CCN\eddi\Projekte\AutoIt\BillClear\SQLite3.dll |
 
 ###SQL Flag###
 >```AutoIt
@@ -229,9 +260,13 @@ Inhaltsverzeichnis
 > Setzt in der Datenbank ein Flag auf einen Datensatz, und übergibt diesen in ein Array.  Es wird hierbei nur das erste Vorkommen behandelt. **Dies ist Sinnvoll wenn mehrer PC's mit einer Datenbank arbeiten.**
 
 >**Parameter** *kompatibel mit [$sql_defaults](#sql-defaults)*
+
 >>`$param1` = `(Default => tabelle)` Tabellenname 
+
 >>`$param2` = `(Default => suchewert)` Wert nach welchen gesucht werden soll
+
 >>`$param3` = `(Default => flag_spalte)` Name der Tabellenspalte in welcher der Flag erfolgen soll 
+
 >>`$param4` = `(Default => flag_wert)` Wert des Flags 
 
 >**@error**
@@ -250,10 +285,11 @@ Inhaltsverzeichnis
 >  _arrayDisplay($aDatan)
 >```
 >>**Ausgabe**
->>|Row|Col 0|Col 1|Col 2|Col 3|Col 4|Col 5
->|---|---|---|---|---|
->|[0]|ID|Acc|Gutschrift|State|Flag|Timestamp
->|[3]|3|600******|9,99|open|DES****| 19.02.2015 16:46:45.900
+
+>>| Row | Col 0 | Col 1 |Col 2 | Col 3 | Col 4 | Col 5 |
+>>| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+>>| [0] | ID | Acc | Gutschrift | State | Flag | Timestamp |
+>>| [3] | 3 | 123 | 9,99 |open | Computer | 19.02.2015 16:46:45.900 |
 
 ###SQL Count###
 
@@ -263,8 +299,11 @@ Inhaltsverzeichnis
 >liefert die Spalten Anzahl anhand des gesuchten Wertes
 
 >**Parameter** *kompatibel mit [$sql_defaults](#sql-defaults)*
+
 >>`$param1` = `(Default => tabelle)` *optional* Tabellen Name
+
 >>`$param2` = `(Default => spalte)` *optional* Spalten Name
+
 >>`$param3` = `(Default => suchwert)` *optional* Suchwert
 
 >**Beispiel mit Defaults**
