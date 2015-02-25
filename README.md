@@ -23,7 +23,7 @@ nächste Funktionen
 >```AutoIt
 > $sql_init([$param1 = 'string'])
 >```
->Mit der Initialisierung hat man die Möglichkeit die Pfade für die SQLite3.dll und zu der Datenbank festzulegen. **Die Initialisierung ist Default und muss nicht zwingend aufgerufen werden.**
+>Mit der Initialisierung hat man vorerst die Möglichkeit den Pfad für die Datenbank festzulegen. **Die Initialisierung ist Default und muss nicht zwingend aufgerufen werden.**
 
 >**Regeln ohne Initialisierung**
 
@@ -49,16 +49,24 @@ nächste Funktionen
 > Diese Funktion sollte am Script anfang erfolgen.
 
 >**Parameter**
+
 >>`$param1` Name des Wertes
+
 >> `$param2`(optional) Wert
+
 >> `$param3`(optional) Durchzuführende Aktion  `'get' (default)`, `'set'` & `'display'`
 
 >**Standard (Defaults)**
+
 >>`Tabelle => data`
-`spalte => state`
-`suchwert => open`
-`flag_Spalte => flag`
-`flag_Wert => @computername`
+
+>>`spalte => state`
+
+>>`suchwert => open`
+
+>>`flag_Spalte => flag`
+
+>>`flag_Wert => @computername`
 
 >**Beispiel Default setzen**
 >```AutoIt
@@ -79,13 +87,13 @@ nächste Funktionen
 >```AutoIt
 > $sql_defaults('','','display')
 >```
->>|Row|Col 0|Col 1
->|---|---|
->|[0]|tabelle|data
->|[1]|spalte|state
->|[2]|suchewert|open
->|[3]|flag_spalte|flag
->|[4]|flag_wert|DES*****
+>> | Row |Col 0 |Col 1 |
+>> | ------------- | ------------- | ------------- |
+>> | [0] |tabelle |data |
+>> | [1] |spalte |state |
+>> | [2] |suchewert |open |
+>> | [3] |flag_spalte |flag |
+>> | [4] |flag_wert | Computer | 
 
 ###SQL Get###
 >```AutoIt
